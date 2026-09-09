@@ -1,0 +1,36 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - "3000:3000"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY in .env}
+      PI_CODING_AGENT_DIR: /data/pi-agent
+      WORKSPACE_ROOT: /data/workspace
+      RUNS_DIR: /data/runs
+      DB_PATH: /data/db/app.db
+      NEXT_PUBLIC_PI_WEB_URL: ${PI_WEB_PUBLIC_URL:-http://localhost:30141}
+    volumes:
+      - pi-agent-data:/data/pi-agent
+      - workspace-data:/data/workspace
+      - runs-data:/data/runs
+      - db-data:/data/db
+    depends_on:
+      - pi-web
+
+  pi-web:
+    build: ./pi-web
+    ports:
+      - "30141:30141"
+    environment:
+      PI_CODING_AGENT_DIR: /data/pi-agent
+      PI_WEB_PASSWORD: ${PI_WEB_PASSWORD:-}
+    volumes:
+      - pi-agent-data:/data/pi-agent
+      - workspace-data:/data/workspace
+
+volumes:
+  pi-agent-data:
+  workspace-data:
+  runs-data:
+  db-data:
